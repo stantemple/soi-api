@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+  <head>
+    <meta charset="utf-8" />
+    <title>hmm</title>
+    <script
+      src="http://localhost:8080/socket.io/socket.io.js"
+      charset="utf-8"
+    ></script>
+    <script>
+      const socket = io('http://localhost:8080/')
+
+      console.log(socket.connected)
+
+      socket.on('init', function (data) {
+        console.log('init', data)
+        socket.emit('ping', {
+          my: 'data'
+        })
+      })
+
+      function publish(channel, message) {
+        socket.emit(channel, message)
+      }
+
+      function subscribe(channel, callback) {
+        socket.on(channel, callback)
+      }
+
+      //////////
+      // TEST //
+      //////////
+
+      subscribe('pong', function (data) {
+        console.log('got pong', data)
+      })
+      subscribe('action', function (data) {
+        console.log('got action', data)
+        if (data.type === 'add') {
+          var ul = document.getElementById('messagelist')
+          var li = document.createElement('li')
+          li.appendChild(document.createTextNode(data.message))
+          ul.appendChild(li)
+        }
+      })
+
+      function send() {
+        var input = document.getElementById('message')
+        publish('action', {
+          type: 'add',
+          message: input.value
+        })
+        input.value = ''
+      }
+    </script>
+  </head>
+  <body>
+    <h1>Shared list</h1>
+    <p>Open a few browsers and SEND some messages.</p>
+    <ul id="messagelist"></ul>
+    <input id="message" placeholder="Message to send" />
+    <button onclick="send()">SEND</button>
+  </body>
+</html>

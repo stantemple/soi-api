@@ -1,0 +1,43 @@
+{
+  "name": "demo",
+  "version": "0.0.2",
+  "description": "demon",
+  "main": "index.js",
+  "scripts": {
+    "start": "pm2-runtime start pm2.json --env production | pino-colada",
+    "dev": "./node_modules/nodemon/bin/nodemon.js ./src/server.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "version": "",
+    "postversion": "git push && git push --tags"
+  },
+  "author": "niksmac <niksmac@quizzed.at>",
+  "license": "ISC",
+  "dependencies": {
+    "@guivic/fastify-socket.io": "^0.1.3",
+    "@truffle/hdwallet-provider": "^1.5.1",
+    "add": "^2.0.6",
+    "axios": "^0.23.0",
+    "dotenv": "^10.0.0",
+    "fastify": "^3.22.1",
+    "fastify-autoload": "^3.9.0",
+    "fastify-cors": "^6.0.2",
+    "fastify-etag": "^2.1.0",
+    "fastify-jwt": "^3.2.1",
+    "fastify-oas": "^3.0.8",
+    "fluent-schema": "^1.1.0",
+    "lodash": "^4.17.21",
+    "mongoose": "^6.0.11",
+    "mongoose-unique-validator": "^3.0.0",
+    "nodemon": "^2.0.14",
+    "omit-empty": "^1.0.0",
+    "pino-colada": "^2.2.0",
+    "serve": "^12.0.1",
+    "socket.io": "^4.3.1",
+    "twit": "^2.2.11",
+    "twitter": "^1.7.1",
+    "v8-compile-cache": "^2.3.0",
+    "web3": "^1.6.0",
+    "ws": "^8.2.3",
+    "yarn": "^1.22.17"
+  }
+}
