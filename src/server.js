@@ -67,13 +67,16 @@ const isExist = (array, needle) =>
 const formatOutput = input =>
   tags.map(tag => ({ hashTag: tag, twitter: tweetCounts[tag] }))
 
-const streamCallback = (tweet, socket) => {
+const streamCallback = tweet => {
   tweet = parseTweet(tweet)
   for (var tag of tags) {
     if (isExist(tweet, tag)) {
       tweetCounts[tag]++
     }
   }
+}
+
+const sendTweets = socket => {
   const formattedTweets = tweetCounts
   socket.emit('action', {
     type: 'add',
@@ -89,5 +92,8 @@ const handleCallback = async socket => {
   const stream = client.stream('statuses/filter', {
     track: tags
   })
-  stream.on('tweet', tweet => streamCallback(tweet, socket))
+  // stream.on('tweet', tweet => streamCallback(tweet, socket))
+  // setInterval(() => sendTweets(socket), 10000)
+  stream.on('tweet', streamCallback)
+  setInterval(() => sendTweets(socket), 10000)
 }
