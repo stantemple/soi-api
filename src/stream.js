@@ -23,9 +23,7 @@ const client = new Twit({
   strictSSL: true
 })
 let tags = [] //['#Bitcoin', '#BTS', '#Eternals', '#T20WorldCup', '#Rinkeby']
-const initState = _.zipObject(tags, new Array(tags.length).fill(0))
-let tweetCounts = { ...initState }
-
+let tweetCounts = {}
 const parseTweet = tweet => {
   let fullTweet = tweet.text || ''
   let twitHashtags = fullTweet.match(/#[a-zA-Z0-9_]+/gi)
@@ -40,7 +38,6 @@ const formatOutput = input =>
 
 const streamCallback = tweet => {
   tweet = parseTweet(tweet)
-
   for (var tag of tags) {
     if (isExist(tweet, tag)) {
       tweetCounts[tag]++
@@ -50,6 +47,7 @@ const streamCallback = tweet => {
 
 const sendTweets = socket => {
   const formattedTweets = tweetCounts
+  console.log(formattedTweets)
   tweetCounts = { ...initState }
   socket.emit('action', {
     type: 'add',
@@ -61,6 +59,8 @@ const handleCallback = async () => {
   console.log('mongo connected')
   let hashModel = new HashTModel()
   tags = await hashModel.getHashTags()
+  const initState = _.zipObject(tags, new Array(tags.length).fill(0))
+  tweetCounts = { ...initState }
   io.on('connection', socket => {
     const stream = client.stream('statuses/filter', {
       track: tags
