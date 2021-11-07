@@ -81,7 +81,6 @@ async function syncData(data, wallet, userId, balance) {
       users: newUsers,
       wallets: newWallets
     })
-    console.log('update', update)
     return update
   } catch (e) {
     throw e
