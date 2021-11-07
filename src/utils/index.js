@@ -1,3 +1,4 @@
+const _ = require('lodash')
 const Connect = require('./contract')
 const HashTagModel = require('../models/hashtagModel.js')
 const instance = new Connect(
@@ -15,12 +16,14 @@ async function checkForNfts(wallet) {
       tokenIds = [],
       obj = {},
       dataArray = [],
-      arr = []
-    for (i = 0; i < nftIds.length; i++) {
-      walletArray.push(wallet)
-      tokenIds.push(nftIds[i])
-    }
-    let data = await instance.balanceOfBatch(walletArray, tokenIds)
+      arr = [],
+      len = nftIds.length
+    walletArray = _.fill(Array(len), wallet)
+    // for (i = 0; i < nftIds.length; i++) {
+    //   walletArray.push(wallet)
+    //   tokenIds.push(nftIds[i])
+    // }
+    let data = await instance.balanceOfBatch(walletArray, nftIds)
     for (let i = 0; i < nftIds.length; i++) {
       if (data[i] > 0) {
         let key = nftIds[i]

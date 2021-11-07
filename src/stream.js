@@ -22,8 +22,7 @@ const client = new Twit({
   timeout_ms: 60 * 1000,
   strictSSL: true
 })
-
-const tags = ['#nft', '#bitcoin', '#T20WorldCup', '#Rinkeby']
+let tags = [] //['#Bitcoin', '#BTS', '#Eternals', '#T20WorldCup', '#Rinkeby']
 const initState = _.zipObject(tags, new Array(tags.length).fill(0))
 let tweetCounts = { ...initState }
 
@@ -60,7 +59,8 @@ const sendTweets = socket => {
 
 const handleCallback = async () => {
   console.log('mongo connected')
-
+  let hashModel = new HashTModel()
+  tags = await hashModel.getHashTags()
   io.on('connection', socket => {
     const stream = client.stream('statuses/filter', {
       track: tags

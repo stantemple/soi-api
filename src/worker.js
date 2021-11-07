@@ -6,12 +6,13 @@ const _ = require('lodash')
 const CursorModel = require('./models/cursorModel.js')
 const HashTModel = require('./models/hashtagModel.js')
 
-let tags = [
-  '#Test001ABCPQRS',
-  '#Test001ABCPQR',
-  '#Test001ABCPQRTT',
-  '#T20WorldCup'
-]
+// let tags = [
+//     '#Test001ABCPQRS',
+//     '#Test001ABCPQR',
+//     '#Test001ABCPQRTT',
+//     '#T20WorldCup'
+//   ],
+//   list = tags.join(', OR')
 mongoose
   .connect(process.env.MONGO_CONN, {
     useUnifiedTopology: true,
@@ -19,16 +20,24 @@ mongoose
   })
   .then(async k => {
     try {
-      const cursorModel = new CursorModel()
-      //console.log(await CursorModel.deleteMany({}))
-      //console.log(await HashTModel.find({}))
+      const cursorModel = new CursorModel(),
+        hashModel = new HashTModel()
+      //ssconsole.log(await CursorModel.deleteMany({}))
+      // console.log(
+      //   await HashTModel.findOneAndUpdate(
+      //     { nftId: '3' },
+      //     { $set: { hashTag: '#Eternals' } }
+      //   )
+      // )
       let client = new Twitter({
           consumer_key: process.env.TW_CONSUMER_KEY,
           consumer_secret: process.env.TW_CONSUMER_SECRET,
           access_token_key: process.env.TW_ACCESS_TOKEN,
           access_token_secret: process.env.TW_ACCESS_TOKEN_SECRET
         }),
-        len = 0
+        len = 0,
+        tags = await hashModel.getHashTags(),
+        list = tags.join(', OR')
 
       async function twitCall() {
         let cursor = await cursorModel.getCursor(),
@@ -37,7 +46,7 @@ mongoose
         since_id = cursor ? cursor.since_id : 1 //cursor.since_id+1
         console.log('-------since_id------', since_id)
         let tweets = await client.get('search/tweets', {
-          q: '(#Test001ABCPQRS, OR #Test001ABCPQR, OR #Test001ABCPQRTT)',
+          q: list,
           count: 200,
           //until: '2021/10/20'
           //max_id: 1450025588643668000 - 1,
@@ -68,7 +77,6 @@ mongoose
               }
             }
             if (!_.isEmpty(temp_obj)) {
-              let hashModel = new HashTModel()
               await hashModel.updateTwitterOccurnace(temp_obj)
             } else {
               console.log('here')
