@@ -4,12 +4,12 @@
     <meta charset="utf-8" />
     <title>hmm</title>
     <script
-      src="http://localhost:3000/socket.io/socket.io.js"
+      src="http://localhost:4000/socket.io/socket.io.js"
       charset="utf-8"
     ></script>
     <script>
-      const socket = io('http://localhost:3000/')
-      console.log(socket.connected)
+      const socket = io('http://localhost:4000/')
+      console.log(socket)
 
       socket.on('init', function (data) {
         console.log('init', data)

@@ -11,12 +11,6 @@
       "script": "./src/worker.js",
       "exec_mode": "cluster",
       "max_memory_restart": "512M"
-    },
-    {
-      "name": "soi-stream",
-      "script": "./src/stream.js",
-      "exec_mode": "cluster",
-      "max_memory_restart": "512M"
     }
   ]
 }
