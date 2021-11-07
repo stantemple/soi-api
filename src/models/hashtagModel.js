@@ -148,6 +148,15 @@ HashtagSchema.methods = {
       { multi: true }
     )
     return result
+  },
+  getHashTags: async function () {
+    const HashT = mongoose.model('Hashtag')
+    let result = await HashT.find({}, { hashTag: 1, _id: -1 }),
+      tags = []
+    result.map(item => {
+      tags.push(item.hashTag)
+    })
+    return tags
   }
 }
 
