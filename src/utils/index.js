@@ -62,4 +62,30 @@ async function mintNft(wallet, nftId, amount) {
   }
 }
 
-module.exports = { checkForNfts, formatInputData, mintNft }
+async function syncData(data, wallet, userId, balance) {
+  try {
+    const hashTagModel = new HashTagModel()
+    let newUsers = data.users.filter(value => value != userId),
+      newWallets = data.wallets.filter(
+        value => value.toLowerCase() != wallet.toLowerCase()
+      ),
+      usersArray = _.fill(Array(balance[data.nftId]), userId)
+
+    newUsers = _.concat(newUsers, usersArray)
+    newWallets = _.concat(
+      newWallets,
+      _.fill(Array(balance[data.nftId]), wallet)
+    )
+
+    let update = await hashTagModel.updateTeam(data._id, {
+      users: newUsers,
+      wallets: newWallets
+    })
+    console.log('update', update)
+    return update
+  } catch (e) {
+    throw e
+  }
+}
+
+module.exports = { checkForNfts, formatInputData, mintNft, syncData }

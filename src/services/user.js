@@ -1,9 +1,10 @@
 'use strict'
 const omitEmpty = require('omit-empty')
+const _ = require('lodash')
 const User = require('../models/userModel.js')
 const HashTagModel = require('../models/hashtagModel.js')
 const userSchema = require('../schema/userSchema.js')
-const { checkForNfts, formatInputData } = require('../utils')
+const { checkForNfts, formatInputData, syncData } = require('../utils')
 
 module.exports = async function (fastify, opts) {
   fastify.addHook('onRequest', async (request, reply) => {
@@ -21,26 +22,13 @@ module.exports = async function (fastify, opts) {
           userId = request.user.userId,
           balance = await checkForNfts(wallet),
           data = await hashTagModel.checkPositions(wallet),
-          diff = 0
-        balance.filter(function (o1) {
-          data.some(function (o2) {
-            for (let k in o1) {
-              if (o2[k]) {
-                diff = o1[k] - o2[k]
-              } else {
-                diff = o1[k]
-              }
-
-              if (diff !== NaN && diff > 0) {
-                newTokens.push({ [k]: diff })
-              }
-            }
-          })
-        })
-        let inputArray = formatInputData(newTokens, wallet, userId)
-        if (inputArray.length > 0) {
-          await hashTagModel.addUser(inputArray)
+          diff = 0,
+          newBalance = balance.map((value, key) => _.keys(value).toString())
+        let res = await hashTagModel.getAllValues(newBalance)
+        for (var i = 0; i < res.length; i++) {
+          syncData(res[i], wallet, userId, balance[i])
         }
+
         reply.success({ message: 'Account synced' })
       } catch (e) {
         console.log(e)

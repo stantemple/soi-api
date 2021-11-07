@@ -7,6 +7,11 @@ const ObjectId = require('mongodb').ObjectID
 
 const HashtagSchema = new mongoose.Schema(
   {
+    name: {
+      type: String,
+      required: true,
+      index: true
+    },
     nftId: {
       type: String,
       required: true,
@@ -26,7 +31,8 @@ const HashtagSchema = new mongoose.Schema(
       default: () => []
     },
     image: {
-      type: String
+      type: String,
+      index: true
     }
   },
   {
@@ -113,7 +119,7 @@ HashtagSchema.methods = {
     const HashT = mongoose.model('Hashtag')
     let result = await HashT.find(
       {},
-      { nftId: 1, hashTag: 1, twitter: 1, image: 1, _id: -1 }
+      { nftId: 1, hashTag: 1, twitter: 1, image: 1, name: 1, _id: -1 }
     )
     return result
   },
@@ -122,16 +128,26 @@ HashtagSchema.methods = {
     let result = []
 
     let data = await HashT.aggregate([
-      { $project: { wallets: 1, nftId: 1, users: 1, hashTag: 1 } },
+      {
+        $project: {
+          wallets: 1,
+          nftId: 1,
+          users: 1,
+          hashTag: 1,
+          image: 1,
+          name: 1
+        }
+      },
       { $unwind: '$wallets' },
       { $match: { wallets: { $in: [wallet] } } },
       {
         $group: {
           _id: {
-            wallet: '$wallets',
             nftId: '$nftId',
             userId: '$users',
-            hashTag: '$hashTag'
+            hashTag: '$hashTag',
+            image: '$image',
+            name: '$name'
           },
           count: { $sum: 1 }
         }
@@ -157,6 +173,25 @@ HashtagSchema.methods = {
       tags.push(item.hashTag)
     })
     return tags
+  },
+  getAllValues: async function (nftIds) {
+    console.log(nftIds)
+    const HashT = mongoose.model('Hashtag')
+    let result = await HashT.find(
+      { nftId: { $in: nftIds } },
+      { users: 1, wallets: 1, nftId: 1 }
+    )
+    return result
+  },
+  updateTeam: async function (docId, data) {
+    let { users, wallets } = data
+    const HashT = mongoose.model('Hashtag')
+    let result = await HashT.findOneAndUpdate(
+      { _id: ObjectId(docId) },
+      { users, wallets },
+      { new: true }
+    )
+    return result
   }
 }
 
