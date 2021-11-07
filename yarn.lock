@@ -2302,6 +2302,14 @@ fastify-plugin@^3.0.0:
   resolved "https://registry.yarnpkg.com/fastify-plugin/-/fastify-plugin-3.0.0.tgz#cf1b8c8098e3b5a7c8c30e6aeb06903370c054ca"
   integrity sha512-ZdCvKEEd92DNLps5n0v231Bha8bkz1DjnPP/aEz37rz/q42Z5JVLmgnqR4DYuNn3NXAO3IDCPyRvgvxtJ4Ym4w==
 
+fastify-socket.io@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/fastify-socket.io/-/fastify-socket.io-2.0.1.tgz#69188178383c010ffbb83f50dedaf43d17859d85"
+  integrity sha512-Y2T+hTnHFzcFsmWa7uddng75O6SRR7fnHhio219lKYwhELr78NAca3wspt0nDGlYZIW0qlbO+W5foqWnn9zeYA==
+  dependencies:
+    fastify-plugin "^3.0.0"
+    socket.io "^4.0.1"
+
 fastify-static@^3.3.0:
   version "3.4.0"
   resolved "https://registry.yarnpkg.com/fastify-static/-/fastify-static-3.4.0.tgz#812f7af416ef2e998c7d6c19ae3dd7afc8d7ca58"
@@ -4711,7 +4719,7 @@ socket.io-parser@~4.0.4:
     component-emitter "~1.3.0"
     debug "~4.3.1"
 
-socket.io@^4.3.1:
+socket.io@^4.0.1, socket.io@^4.3.1:
   version "4.3.1"
   resolved "https://registry.yarnpkg.com/socket.io/-/socket.io-4.3.1.tgz#c0aa14f3f916a8ab713e83a5bd20c16600245763"
   integrity sha512-HC5w5Olv2XZ0XJ4gOLGzzHEuOCfj3G0SmoW3jLHYYh34EVsIr3EkW9h6kgfW+K3TFEcmYy8JcPWe//KUkBp5jA==
