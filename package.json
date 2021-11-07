@@ -10,7 +10,6 @@
     "version": "",
     "postversion": "git push && git push --tags"
   },
-  "author": "niksmac <niksmac@quizzed.at>",
   "license": "ISC",
   "dependencies": {
     "@guivic/fastify-socket.io": "^0.1.3",
