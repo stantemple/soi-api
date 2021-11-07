@@ -120,7 +120,7 @@ HashtagSchema.methods = {
     let result = await HashT.find(
       {},
       { nftId: 1, hashTag: 1, twitter: 1, image: 1, name: 1, _id: -1 }
-    )
+    ).sort({ twitter: -1 })
     return result
   },
   getTeams: async function (wallet) {
