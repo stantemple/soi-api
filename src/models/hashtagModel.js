@@ -108,25 +108,49 @@ HashtagSchema.methods = {
   },
   getNfts: async function () {
     const HashT = mongoose.model('Hashtag')
-    let result = await HashT.find({}, { nftId: 1, _id: -1 }),
+    let result = await HashT.find(
+        { nftId: { $ne: '' } },
+        { nftId: 1, _id: -1 }
+      ),
       nfts = []
     result.map(item => {
-      nfts.push(Number(item.nftId))
+      if (item.nftId) nfts.push(Number(item.nftId))
     })
     return nfts
   },
   getTwitterOccurance: async function () {
     const HashT = mongoose.model('Hashtag')
-    let result = await HashT.find(
-      {},
-      { nftId: 1, hashTag: 1, twitter: 1, image: 1, name: 1, _id: -1 }
-    ).sort({ twitter: -1 })
-    return result
+    let data = await HashT.aggregate([
+      { $match: { nftId: { $ne: null } } },
+      { $sort: { twitter: -1 } },
+
+      {
+        $group: {
+          _id: null,
+          twitterSum: { $sum: '$twitter' },
+          doc: { $push: '$$ROOT' }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0,
+          'doc.nftId': 1,
+          'doc.hashTag': 1,
+          'doc.twitter': 1,
+          'doc.name': 1,
+          'doc.image': 1,
+          'doc._id': -1,
+          twitterSum: 1
+        }
+      }
+    ])
+
+    return data
   },
   getTeams: async function (wallet) {
     const HashT = mongoose.model('Hashtag')
     let result = []
-
     let data = await HashT.aggregate([
       {
         $project: {
@@ -192,6 +216,49 @@ HashtagSchema.methods = {
       { new: true }
     )
     return result
+  },
+  getTeamDetail: async function (nftId) {
+    const HashT = mongoose.model('Hashtag')
+    let data = await HashT.aggregate(
+      [
+        { $match: { nftId: nftId } },
+        { $unwind: '$wallets' },
+        // count
+        {
+          $group: {
+            _id: {
+              id: '$nftId',
+              name: '$name',
+              image: '$image',
+              hashTag: '$hashTag',
+              wallet: '$wallets'
+            },
+            nftTokens: { $sum: 1 }
+          }
+        },
+        // build array
+        {
+          $group: {
+            _id: {
+              nftId: '$_id.id',
+              name: '$_id.name',
+              image: '$_id.image',
+              hashTag: '$_id.hashTag'
+            },
+            users: {
+              $push: {
+                wallet: '$_id.wallet',
+                nftTokens: '$nftTokens'
+              }
+            }
+          }
+        }
+        // write to new collection
+        //{ $out: 'occurences' }
+      ]
+      //{ allowDiskUse: true }
+    )
+    return data
   }
 }
 
