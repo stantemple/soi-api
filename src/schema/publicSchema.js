@@ -5,7 +5,7 @@ const loginJsonSchema = S.object().prop(
   S.string().minLength(10).required()
 )
 
-const archiveBodySchema = S.object().prop('date', S.string().required())
+const archiveBodySchema = S.object().prop('endDate', S.string().required())
 
 const archiveParamSchema = S.object().title('archive').prop('page', S.number())
 
