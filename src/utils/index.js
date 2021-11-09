@@ -1,13 +1,13 @@
 const _ = require('lodash')
 const Connect = require('./contract')
 const HashTagModel = require('../models/hashtagModel.js')
+const Soi = require('./soi.js')
 const instance = new Connect(
   process.env.PUBLIC_KEY,
   process.env.PRIVATE_KEY,
   process.env.CONTRACT_ADDRESS,
   process.env.RPC
 )
-
 async function checkForNfts(wallet) {
   try {
     const hashTagModel = new HashTagModel()
@@ -24,6 +24,7 @@ async function checkForNfts(wallet) {
     //   tokenIds.push(nftIds[i])
     // }
     let data = await instance.balanceOfBatch(walletArray, nftIds)
+    console.log(data)
     for (let i = 0; i < nftIds.length; i++) {
       if (data[i] > 0) {
         let key = nftIds[i]
@@ -87,4 +88,34 @@ async function syncData(data, wallet, userId, balance) {
   }
 }
 
-module.exports = { checkForNfts, formatInputData, mintNft, syncData }
+async function mintSoiToken(amount) {
+  try {
+    let result = await Soi.contract.mint(
+      process.env.TWITTER_INFLUENCE_KEY,
+      amount
+    )
+    console.log('######', result)
+    return result
+  } catch (e) {
+    console.log('ERRor here', e)
+    throw e
+  }
+}
+
+//function to distribute soi(equal to twit count for each team) for members
+
+async function claimSoiToken(data) {
+  try {
+    let obj = {}
+    data.map(item => {})
+  } catch (e) {}
+}
+
+module.exports = {
+  checkForNfts,
+  formatInputData,
+  mintNft,
+  syncData,
+  mintSoiToken,
+  claimSoiToken
+}
