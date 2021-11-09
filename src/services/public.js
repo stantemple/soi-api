@@ -15,7 +15,7 @@ module.exports = async function (fastify, opts) {
       const userModel = new User(),
         hashTagModel = new HashTagModel(),
         dataArray = await checkForNfts(wallet)
-      console.log(dataArray)
+      console.log('dataArray', dataArray)
       if (dataArray.length > 0) {
         const user = await userModel.getUserByWallet(wallet)
         if (user == null || user.wallet !== wallet) {
@@ -102,33 +102,6 @@ module.exports = async function (fastify, opts) {
       }
       return reply
     }),
-    fastify.post(
-      '/admin/archive',
-      { schema: publicSchema.archiveSchema },
-      async function (request, reply) {
-        try {
-          let { date } = request.body,
-            archiveModel = new ArchiveModel(),
-            hashTagModel = new HashTagModel(),
-            data = await hashTagModel.getTwitterOccurance()
-          archiveModel.date = date
-          archiveModel.data = data
-          archiveModel.save(async (err, doc) => {
-            if (err) {
-              request.log.error(err)
-              reply.error(err)
-            } else {
-              await hashTagModel.reset()
-              reply.success({ message: 'Saved to archive', data: doc })
-            }
-          })
-        } catch (err) {
-          console.log(err)
-          reply.error(err)
-        }
-        return reply
-      }
-    ),
     fastify.get(
       '/admin/archive/:page',
       { schema: publicSchema.getArchiveSchema },
@@ -148,5 +121,19 @@ module.exports = async function (fastify, opts) {
         }
         return reply
       }
-    )
+    ),
+    fastify.get('/team/detail', async function (request, reply) {
+      try {
+        let hashTagModel = new HashTagModel(),
+          result = await hashTagModel.getTeamDetail('1')
+        reply.success({
+          message: 'Twitter Count',
+          data: result
+        })
+      } catch (err) {
+        console.log(err)
+        reply.error(err)
+      }
+      return reply
+    })
 }
