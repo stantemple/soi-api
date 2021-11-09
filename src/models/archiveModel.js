@@ -5,13 +5,17 @@ const uniqueValidator = require('mongoose-unique-validator')
 
 const ArchiveSchema = new mongoose.Schema(
   {
-    date: {
+    endDate: {
       type: Date,
       required: true
     },
     data: {
       type: Array,
       default: () => []
+    },
+    isMinted: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -25,10 +29,25 @@ ArchiveSchema.methods = {
     let criteria = {}
     const options = {
       criteria: criteria,
-      select: 'date data ',
+      select: 'endDate data isMinted ',
       page: page
     }
     return await ArchiveModel.list(options)
+  },
+  updateMintStatus: async function (docId) {
+    const ArchiveModel = mongoose.model('Archive')
+    return await ArchiveModel.findOneAndUpdate(
+      { _id: docId },
+      { isMinted: true },
+      { new: true }
+    )
+  },
+  getById: async function (docId) {
+    const ArchiveModel = mongoose.model('Archive')
+    return await ArchiveModel.findOne(
+      { _id: docId, isMinted: true },
+      { data: 1 }
+    )
   }
 }
 ArchiveSchema.statics = {
@@ -36,7 +55,7 @@ ArchiveSchema.statics = {
     const criteria = options.criteria || {}
     const page = options.page === 0 ? 0 : options.page - 1
     const limit = parseInt(options.limit) || 20
-    const select = options.select || 'date data'
+    const select = options.select || 'endDate data isMinted'
     return this.find(criteria)
       .select(select)
       .sort({ createdAt: -1 })
