@@ -9,6 +9,10 @@ const archiveBodySchema = S.object().prop('endDate', S.string().required())
 
 const archiveParamSchema = S.object().title('archive').prop('page', S.number())
 
+const getTeamParamSchema = S.object()
+  .title('Team details')
+  .prop('nftId', S.string().required())
+
 exports.loginSchema = {
   tags: ['User'],
   summary: 'Login',
@@ -25,4 +29,10 @@ exports.archiveSchema = {
   tags: ['Admin'],
   summary: 'Archive',
   body: archiveBodySchema
+}
+
+exports.getTeamSchema = {
+  tags: ['Public'],
+  summary: 'Get Team Details',
+  params: getTeamParamSchema
 }

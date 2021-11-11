@@ -122,18 +122,23 @@ module.exports = async function (fastify, opts) {
         return reply
       }
     ),
-    fastify.get('/team/detail', async function (request, reply) {
-      try {
-        let hashTagModel = new HashTagModel(),
-          result = await hashTagModel.getTeamDetail('1')
-        reply.success({
-          message: 'Twitter Count',
-          data: result
-        })
-      } catch (err) {
-        console.log(err)
-        reply.error(err)
+    fastify.get(
+      '/team/:nftId',
+      { schema: publicSchema.getTeamSchema },
+      async function (request, reply) {
+        let { nftId } = request.params
+        try {
+          let hashTagModel = new HashTagModel(),
+            result = await hashTagModel.getTeamDetail(nftId)
+          reply.success({
+            message: 'Twitter Count',
+            data: result
+          })
+        } catch (err) {
+          console.log(err)
+          reply.error(err)
+        }
+        return reply
       }
-      return reply
-    })
+    )
 }
