@@ -16,6 +16,10 @@ const ArchiveSchema = new mongoose.Schema(
     isMinted: {
       type: Boolean,
       default: false
+    },
+    isClaimed: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -47,6 +51,14 @@ ArchiveSchema.methods = {
     return await ArchiveModel.findOne(
       { _id: docId, isMinted: true },
       { data: 1 }
+    )
+  },
+  updateClaimStatus: async function (docId) {
+    const ArchiveModel = mongoose.model('Archive')
+    return await ArchiveModel.findOneAndUpdate(
+      { _id: docId, isMinted: true, isClaimed: false },
+      { isClaimed: true },
+      { new: true }
     )
   }
 }
