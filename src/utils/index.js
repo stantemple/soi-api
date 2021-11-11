@@ -106,9 +106,34 @@ async function mintSoiToken(amount) {
 
 async function claimSoiToken(data) {
   try {
-    let obj = {}
-    data.map(item => {})
-  } catch (e) {}
+    let obj = {},
+      walletArray = [],
+      amountArray = []
+    data.map(item => {
+      let len = item.wallets.length
+      if (len > 0) {
+        let amount = item.twitter / len
+        item.wallets.map(wallet => {
+          obj[wallet] ? (obj[wallet] += amount) : (obj[wallet] = amount)
+        })
+      }
+    })
+
+    if (_.size(obj) > 0) {
+      for (var property in obj) {
+        if (!obj.hasOwnProperty(property)) {
+          continue
+        }
+
+        walletArray.push(property)
+        amountArray.push(obj[property])
+      }
+      await Soi.contract.addToClaimBatch(walletArray, amountArray)
+    }
+    return true
+  } catch (e) {
+    console.log(e)
+  }
 }
 
 module.exports = {
