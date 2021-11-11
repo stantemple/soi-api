@@ -140,6 +140,7 @@ HashtagSchema.methods = {
           'doc.twitter': 1,
           'doc.name': 1,
           'doc.image': 1,
+          'doc.wallets': 1,
           'doc._id': -1,
           twitterSum: 1
         }
