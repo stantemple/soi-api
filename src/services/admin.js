@@ -15,19 +15,24 @@ module.exports = async function (fastify, opts) {
           archiveModel = new ArchiveModel(),
           hashTagModel = new HashTagModel(),
           data = await hashTagModel.getTwitterOccurance(),
-          twitterSum = data[0].twitterSum
+          twitterSum = data[0].twitterSum,
+          claim = ''
         archiveModel.endDate = endDate
         archiveModel.data = data
         archiveModel.save(async (err, doc) => {
-          console.log(doc)
           if (err) {
             request.log.error(err)
             reply.error(err)
           } else {
             await hashTagModel.reset()
             await mintSoiToken(twitterSum)
-            let update = await archiveModel.updateMintStatus(doc._id)
-            reply.success({ message: 'Saved to archive', data: update })
+            let update = await archiveModel.updateMintStatus(doc._id),
+              dataById = await archiveModel.getById(update._id),
+              result = await claimSoiToken(dataById.data[0].doc)
+            if (result) {
+              claim = await archiveModel.updateClaimStatus(update._id)
+            }
+            reply.success({ message: 'soi tokens claimed', data: claim })
           }
         })
       } catch (err) {
@@ -36,16 +41,21 @@ module.exports = async function (fastify, opts) {
       }
       return reply
     }
-  ),
-    fastify.post('/admin/claim', async function (request, reply) {
-      try {
-        let archiveModel = new ArchiveModel(),
-          data = await archiveModel.getById('618a8c1b9933e847130a5b4d')
-        result = await claimSoiToken(data.data[0].doc)
-        return true
-      } catch (err) {
-        console.log('Catched error', err)
-        reply.error(err)
-      }
-    })
+  )
+  // fastify.post('/admin/claim', async function (request, reply) {
+  //   try {
+  //     let { docId } = request.boddy,
+  //       update
+  //     let archiveModel = new ArchiveModel(),
+  //       data = await archiveModel.getById(docId),
+  //       result = await claimSoiToken(data.data[0].doc)
+  //     if (result) {
+  //       update = await archiveModel.updateClaimStatus(docId)
+  //     }
+  //     reply.success({ message: 'soi tokens claimed', data: update })
+  //   } catch (err) {
+  //     console.log('Catched error', err)
+  //     reply.error(err)
+  //   }
+  // })
 }
