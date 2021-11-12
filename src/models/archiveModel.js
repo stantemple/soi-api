@@ -60,6 +60,23 @@ ArchiveSchema.methods = {
       { isClaimed: true },
       { new: true }
     )
+  },
+  getWinners: async function () {
+    const ArchiveModel = mongoose.model('Archive')
+    let data = await ArchiveModel.find(
+      {},
+      {
+        'data.twitterSum': 1,
+        'data.doc.twitter': 1,
+        'data.doc.hashTag': 1,
+        'data.doc.wallets': 1
+      }
+    ).sort({
+      createdAt: -1,
+      _id: 1,
+      'data.twitter': -1
+    })
+    return data
   }
 }
 ArchiveSchema.statics = {
