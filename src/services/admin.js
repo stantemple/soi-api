@@ -8,8 +8,6 @@ const { mintSoiToken, claimSoiToken, claimStakes } = require('../utils')
 module.exports = async function (fastify, opts) {
   fastify.post('/nft/add', async function (request, reply) {
     try {
-      console.log(new Date().getWeek())
-      return true
       let data = request.body.data,
         result = await HashTagModel.insertMany(data)
       reply.success({
