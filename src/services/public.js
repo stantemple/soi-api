@@ -3,6 +3,7 @@ const User = require('../models/userModel.js')
 const HashTagModel = require('../models/hashtagModel.js')
 const publicSchema = require('../schema/publicSchema.js')
 const ArchiveModel = require('../models/archiveModel.js')
+const StakeModel = require('../models/stakeModel.js')
 const { checkForNfts, formatInputData, mintNft } = require('../utils')
 
 module.exports = async function (fastify, opts) {
@@ -133,6 +134,34 @@ module.exports = async function (fastify, opts) {
           reply.success({
             message: 'Twitter Count',
             data: result
+          })
+        } catch (err) {
+          console.log(err)
+          reply.error(err)
+        }
+        return reply
+      }
+    ),
+    fastify.post(
+      '/stake',
+      { schema: publicSchema.stakeSchema },
+      async function (request, reply) {
+        try {
+          let { wallet, hashTag, amount } = request.body,
+            stakeModel = new StakeModel()
+          stakeModel.wallet = wallet
+          stakeModel.hashTag = hashTag
+          stakeModel.amount = amount
+
+          stakeModel.save((err, doc) => {
+            if (err) {
+              throw err
+            } else {
+              reply.success({
+                message: 'Staked',
+                data: doc
+              })
+            }
           })
         } catch (err) {
           console.log(err)
