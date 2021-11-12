@@ -33,7 +33,7 @@ ArchiveSchema.methods = {
     let criteria = {}
     const options = {
       criteria: criteria,
-      select: 'endDate data isMinted ',
+      select: 'endDate data isMinted isClaimed',
       page: page
     }
     return await ArchiveModel.list(options)
