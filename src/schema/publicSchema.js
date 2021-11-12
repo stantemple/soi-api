@@ -18,6 +18,10 @@ const stakeBodySchema = S.object()
   .prop('amount', S.number().required())
   .prop('hashTag', S.string().required())
 
+const getStakeBodySchema = S.object()
+  .prop('wallet', S.string().minLength(10).required())
+  .prop('hashTag', S.string().required())
+
 exports.loginSchema = {
   tags: ['User'],
   summary: 'Login',
@@ -46,4 +50,10 @@ exports.stakeSchema = {
   tags: ['Public'],
   summary: 'Stake For the team',
   body: stakeBodySchema
+}
+
+exports.getStakeSchema = {
+  tags: ['Public'],
+  summary: 'Get Stake',
+  body: getStakeBodySchema
 }

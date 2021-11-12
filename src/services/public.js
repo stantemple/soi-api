@@ -169,5 +169,24 @@ module.exports = async function (fastify, opts) {
         }
         return reply
       }
+    ),
+    fastify.post(
+      '/mystake',
+      { schema: publicSchema.getStakeSchema },
+      async function (request, reply) {
+        let { hashTag, wallet } = request.body
+        try {
+          let stakeModel = new StakeModel(),
+            result = await stakeModel.getTotalStakeByWallet(hashTag, wallet)
+          reply.success({
+            message: 'Total Stake',
+            data: result
+          })
+        } catch (err) {
+          console.log(err)
+          reply.error(err)
+        }
+        return reply
+      }
     )
 }
