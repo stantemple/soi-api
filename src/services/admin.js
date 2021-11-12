@@ -3,7 +3,7 @@ const User = require('../models/userModel.js')
 const HashTagModel = require('../models/hashtagModel.js')
 const publicSchema = require('../schema/publicSchema.js')
 const ArchiveModel = require('../models/archiveModel.js')
-const { mintSoiToken, claimSoiToken } = require('../utils')
+const { mintSoiToken, claimSoiToken, claimStakes } = require('../utils')
 
 module.exports = async function (fastify, opts) {
   fastify.post(
@@ -42,20 +42,15 @@ module.exports = async function (fastify, opts) {
       return reply
     }
   )
-  // fastify.post('/admin/claim', async function (request, reply) {
-  //   try {
-  //     let { docId } = request.boddy,
-  //       update
-  //     let archiveModel = new ArchiveModel(),
-  //       data = await archiveModel.getById(docId),
-  //       result = await claimSoiToken(data.data[0].doc)
-  //     if (result) {
-  //       update = await archiveModel.updateClaimStatus(docId)
-  //     }
-  //     reply.success({ message: 'soi tokens claimed', data: update })
-  //   } catch (err) {
-  //     console.log('Catched error', err)
-  //     reply.error(err)
-  //   }
-  // })
+  fastify.post('/admin/stake', async function (request, reply) {
+    try {
+      let archiveModel = new ArchiveModel(),
+        latestLeaderboard = await archiveModel.getWinners()
+      await claimStakes(latestLeaderboard[0])
+      return latestLeaderboard[0]
+    } catch (err) {
+      console.log('Catched error', err)
+      reply.error(err)
+    }
+  })
 }
