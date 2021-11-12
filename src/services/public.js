@@ -61,20 +61,6 @@ module.exports = async function (fastify, opts) {
     }
     return reply
   }),
-    fastify.post('/nft/add', async function (request, reply) {
-      try {
-        let data = request.body.data,
-          result = await HashTagModel.insertMany(data)
-        reply.success({
-          message: 'NFT added',
-          data: result
-        })
-      } catch (err) {
-        console.log(err)
-        reply.error(err)
-      }
-      return reply
-    }),
     fastify.get('/hashtag/count', async function (request, reply) {
       try {
         let hashTagModel = new HashTagModel(),
