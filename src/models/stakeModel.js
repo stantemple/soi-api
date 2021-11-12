@@ -14,7 +14,7 @@ const StakeSchema = new mongoose.Schema(
       required: true
     },
     amount: {
-      type: String,
+      type: Number,
       required: true
     },
     isProcessed: {
@@ -35,7 +35,7 @@ StakeSchema.methods = {
       {
         $group: {
           _id: null,
-          totalStake: { $sum: 'amount' }
+          totalStake: { $sum: '$amount' }
         }
       },
 
@@ -47,7 +47,7 @@ StakeSchema.methods = {
       }
     ])
 
-    return data
+    return data.length > 0 ? data[0].totalStake : 0
   },
   getStakesByHashTag: async function (hashTag) {
     const Stake = mongoose.model('Stake')
@@ -55,6 +55,55 @@ StakeSchema.methods = {
       { hashTag: hashTag, isProcessed: false },
       { wallet: 1, amount: 1, _id: -1 }
     )
+  },
+  updateProcessStatus: async function () {
+    const Stake = mongoose.model('Stake')
+    return await Stake.updateMany(
+      { isProcessed: false },
+      { $set: { isProcessed: true } },
+      { new: true }
+    )
+  },
+  getTotalStakeByHashTag: async function (hashTag) {
+    console.log(hashTag)
+    const Stake = mongoose.model('Stake')
+    let data = await Stake.aggregate([
+      { $match: { hashTag: hashTag, isProcessed: false } },
+      {
+        $group: {
+          _id: null,
+          totalStake: { $sum: '$amount' }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0,
+          totalStake: 1
+        }
+      }
+    ])
+    return data.length > 0 ? data[0].totalStake : 0
+  },
+  getTotalStakeByWallet: async function (hashTag, wallet) {
+    const Stake = mongoose.model('Stake')
+    let data = await Stake.aggregate([
+      { $match: { hashTag: hashTag, wallet: wallet, isProcessed: false } },
+      {
+        $group: {
+          _id: null,
+          totalStake: { $sum: '$amount' }
+        }
+      },
+
+      {
+        $project: {
+          _id: 0,
+          totalStake: 1
+        }
+      }
+    ])
+    return data.length > 0 ? data[0].totalStake : 0
   }
 }
 
