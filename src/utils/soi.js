@@ -84,6 +84,14 @@ const methods = {
     } catch (e) {
       throw e
     }
+  },
+  toWei: amount => {
+    const web3 = getProvider()
+    try {
+      return web3.utils.toWei(amount, 'ether')
+    } catch (e) {
+      throw e
+    }
   }
 }
 
