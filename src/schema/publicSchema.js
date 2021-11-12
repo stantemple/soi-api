@@ -13,6 +13,11 @@ const getTeamParamSchema = S.object()
   .title('Team details')
   .prop('nftId', S.string().required())
 
+const stakeBodySchema = S.object()
+  .prop('wallet', S.string().minLength(10).required())
+  .prop('amount', S.number().required())
+  .prop('hashTag', S.string().required())
+
 exports.loginSchema = {
   tags: ['User'],
   summary: 'Login',
@@ -35,4 +40,10 @@ exports.getTeamSchema = {
   tags: ['Public'],
   summary: 'Get Team Details',
   params: getTeamParamSchema
+}
+
+exports.stakeSchema = {
+  tags: ['Public'],
+  summary: 'Stake For the team',
+  body: stakeBodySchema
 }
