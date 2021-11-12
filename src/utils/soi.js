@@ -1,4 +1,4 @@
-const Web3 = require('Web3')
+const Web3 = require('web3')
 require('dotenv').config()
 const SoiMaker = require('../../abi/SoiMaker.json')
 const TokenSoi = require('../../abi/TokenSoi.json')
