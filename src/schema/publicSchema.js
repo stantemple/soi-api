@@ -22,6 +22,16 @@ const getStakeBodySchema = S.object()
   .prop('wallet', S.string().minLength(10).required())
   .prop('hashTag', S.string().required())
 
+const adminJsonSchema = S.object()
+  .prop('email', S.string().format(S.FORMATS.EMAIL))
+  .prop('password', S.string().minLength(3).required())
+
+exports.adminLoginSchema = {
+  tags: ['Admin'],
+  summary: 'Admin login',
+  body: adminJsonSchema
+}
+
 exports.loginSchema = {
   tags: ['User'],
   summary: 'Login',

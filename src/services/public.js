@@ -4,6 +4,7 @@ const HashTagModel = require('../models/hashtagModel.js')
 const publicSchema = require('../schema/publicSchema.js')
 const ArchiveModel = require('../models/archiveModel.js')
 const StakeModel = require('../models/stakeModel.js')
+const AdminModel = require('../models/adminModel.js')
 const { checkForNfts, formatInputData, mintNft } = require('../utils')
 
 module.exports = async function (fastify, opts) {
@@ -172,6 +173,92 @@ module.exports = async function (fastify, opts) {
           console.log(err)
           reply.error(err)
         }
+        return reply
+      }
+    ),
+    fastify.post(
+      '/admin/signup',
+      { schema: publicSchema.adminLoginSchema },
+      async function (request, reply) {
+        try {
+          let adminModel = new AdminModel()
+          const { email, password } = request.body
+
+          adminModel.email = email.toString().toLowerCase()
+          adminModel.password = password
+
+          await adminModel.save((err, doc) => {
+            if (err) {
+              request.log.error(err)
+              reply.error({ message: 'User already exist' })
+            } else {
+              const token = fastify.jwt.sign(
+                {
+                  adminId: adminModel._id,
+                  role: 'admin'
+                },
+                { expiresIn: process.env.JWT_TOKEN_EXPIRY }
+              )
+
+              reply.headers({
+                authorization: token
+              })
+              reply.success({ message: 'Signup success' })
+            }
+          })
+          return reply
+        } catch (err) {
+          reply.error(err.message)
+        }
+      }
+    ),
+    fastify.post(
+      '/admin/login',
+      { schema: publicSchema.adminLoginSchema },
+      async function (request, reply) {
+        let { email, password } = request.body
+        email = email.toString().toLowerCase()
+        let adminModel = new AdminModel()
+        await adminModel
+          .getUserByEmail(email)
+          .then(function (admin) {
+            if (admin) {
+              const isAuth = admin.authenticate(password)
+              if (isAuth) {
+                const token = fastify.jwt.sign(
+                  {
+                    adminId: admin._id,
+                    role: 'admin'
+                  },
+                  { expiresIn: process.env.JWT_TOKEN_EXPIRY }
+                )
+                reply.headers({
+                  authorization: token
+                })
+
+                reply.success({
+                  message: 'Login Success',
+                  token
+                })
+              } else {
+                reply.error({
+                  message: 'Invalid email or password'
+                })
+              }
+            } else {
+              reply.error({
+                message: 'Not found'
+              })
+            }
+          })
+          .catch(function (err) {
+            console.log(err)
+            request.log.error(err)
+            reply.error({
+              message: 'something went wrong'
+            })
+          })
+
         return reply
       }
     )
