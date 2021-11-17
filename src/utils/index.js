@@ -280,7 +280,6 @@ async function claimStakes(data) {
     await stakeHolderSharesST(secondWT.hashTag)
     await stakesForWT(winnerTeam.wallets)
     await stakesForST(secondWT.wallets)
-    return
     let update = await stakeModel.updateProcessStatus()
     return update
   } catch (e) {
