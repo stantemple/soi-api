@@ -53,14 +53,16 @@ module.exports = async function (fastify, opts) {
                 await hashTagModel.reset()
                 await mintSoiToken(twitterSum)
                 let update = await archiveModel.updateMintStatus(doc._id),
-                  dataById = await archiveModel.getById(update._id),
-                  result = await claimSoiToken(dataById.data[0].doc)
+                  dataById = await archiveModel.getById(update._id)
+                result = await claimSoiToken(dataById.data[0].doc)
                 if (result) {
                   claim = await archiveModel.updateClaimStatus(update._id)
+                  console.log(claim)
                 }
                 reply.success({ message: 'soi tokens claimed', data: claim })
               }
             })
+            //reply.success({ message: 'soi tokens claimed', data: claim })
           }
         } catch (err) {
           console.log('Catched error', err)
@@ -71,12 +73,17 @@ module.exports = async function (fastify, opts) {
     )
   fastify.post('/admin/stake', async function (request, reply) {
     try {
-      let role = request.user.role
+      console.log('called')
+      let role = request.user.role,
+        { docId } = request.body
       if (role && role === 'admin') {
-        let archiveModel = new ArchiveModel(),
-          latestLeaderboard = await archiveModel.getWinners()
-        await claimStakes(latestLeaderboard[0])
-        return latestLeaderboard[0]
+        let archiveModel = new ArchiveModel()
+        latestLeaderboard = await archiveModel.getWinners()
+        let update = await claimStakes(latestLeaderboard[0])
+        await archiveModel.updateProcessStatus(docId)
+
+        // return latestLeaderboard[0]
+        reply.success({ message: 'stakes claimed', data: update })
       }
     } catch (err) {
       console.log('Catched error', err)

@@ -20,6 +20,10 @@ const ArchiveSchema = new mongoose.Schema(
     isClaimed: {
       type: Boolean,
       default: false
+    },
+    isProcessed: {
+      type: Boolean,
+      default: false
     }
   },
   {
@@ -33,7 +37,7 @@ ArchiveSchema.methods = {
     let criteria = {}
     const options = {
       criteria: criteria,
-      select: 'endDate data isMinted isClaimed',
+      select: 'endDate data isMinted isClaimed isProcessed',
       page: page
     }
     return await ArchiveModel.list(options)
@@ -77,6 +81,14 @@ ArchiveSchema.methods = {
       'data.twitter': -1
     })
     return data
+  },
+  updateProcessStatus: async function (docId) {
+    const ArchiveModel = mongoose.model('Archive')
+    return await Stake.ArchiveModel(
+      { _id: docId, isProcessed: false, isMinted: true, isClaimed: true },
+      { $set: { isProcessed: true } },
+      { new: true }
+    )
   }
 }
 ArchiveSchema.statics = {
