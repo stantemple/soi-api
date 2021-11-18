@@ -57,7 +57,6 @@ module.exports = async function (fastify, opts) {
                 result = await claimSoiToken(dataById.data[0].doc)
                 if (result) {
                   claim = await archiveModel.updateClaimStatus(update._id)
-                  console.log(claim)
                 }
                 reply.success({ message: 'soi tokens claimed', data: claim })
               }
@@ -71,23 +70,27 @@ module.exports = async function (fastify, opts) {
         return reply
       }
     )
-  fastify.post('/admin/stake', async function (request, reply) {
-    try {
-      console.log('called')
-      let role = request.user.role,
-        { docId } = request.body
-      if (role && role === 'admin') {
-        let archiveModel = new ArchiveModel()
-        latestLeaderboard = await archiveModel.getWinners()
-        let update = await claimStakes(latestLeaderboard[0])
-        await archiveModel.updateProcessStatus(docId)
+  fastify.post(
+    '/admin/stake',
+    { schema: publicSchema.stakeSchema },
+    async function (request, reply) {
+      try {
+        let role = request.user.role,
+          { docId } = request.body
+        if (role && role === 'admin') {
+          let archiveModel = new ArchiveModel(),
+            latestLeaderboard = await archiveModel.getWinners()
+          let update = await claimStakes(latestLeaderboard[0])
+          await archiveModel.updateProcessStatus(docId)
 
-        // return latestLeaderboard[0]
-        reply.success({ message: 'stakes claimed', data: update })
+          // return latestLeaderboard[0]
+          reply.success({ message: 'stakes claimed', data: update })
+        }
+      } catch (err) {
+        console.log('Catched error', err)
+        reply.error(err)
       }
-    } catch (err) {
-      console.log('Catched error', err)
-      reply.error(err)
+      return reply
     }
-  })
+  )
 }
