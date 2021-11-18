@@ -18,7 +18,7 @@ module.exports = async function (fastify, opts) {
         let data = request.body.data,
           role = request.user.role
         if (role && role === 'admin') {
-          result = await HashTagModel.insertMany(data)
+          let result = await HashTagModel.insertMany(data)
           reply.success({
             message: 'NFT added',
             data: result
@@ -53,8 +53,8 @@ module.exports = async function (fastify, opts) {
                 await hashTagModel.reset()
                 await mintSoiToken(twitterSum)
                 let update = await archiveModel.updateMintStatus(doc._id),
-                  dataById = await archiveModel.getById(update._id)
-                result = await claimSoiToken(dataById.data[0].doc)
+                  dataById = await archiveModel.getById(update._id),
+                  result = await claimSoiToken(dataById.data[0].doc)
                 if (result) {
                   claim = await archiveModel.updateClaimStatus(update._id)
                 }
