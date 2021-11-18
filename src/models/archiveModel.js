@@ -84,7 +84,7 @@ ArchiveSchema.methods = {
   },
   updateProcessStatus: async function (docId) {
     const ArchiveModel = mongoose.model('Archive')
-    return await Stake.ArchiveModel(
+    return await ArchiveModel.findOneAndUpdate(
       { _id: docId, isProcessed: false, isMinted: true, isClaimed: true },
       { $set: { isProcessed: true } },
       { new: true }
