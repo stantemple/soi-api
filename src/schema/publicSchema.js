@@ -26,7 +26,7 @@ const adminJsonSchema = S.object()
   .prop('email', S.string().format(S.FORMATS.EMAIL))
   .prop('password', S.string().minLength(3).required())
 
-const claimStakeSchema = S.object().prop(
+const claimStakeBodySchema = S.object().prop(
   'docId',
   S.string().pattern('^[a-fA-F0-9]{24}$').required()
 )
@@ -73,8 +73,8 @@ exports.getStakeSchema = {
   body: getStakeBodySchema
 }
 
-exports.stakeSchema = {
+exports.claimStakeSchema = {
   tags: ['Admmin'],
   summary: 'Claim Stake',
-  body: claimStakeSchema
+  body: claimStakeBodySchema
 }

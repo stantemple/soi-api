@@ -72,7 +72,7 @@ module.exports = async function (fastify, opts) {
     )
   fastify.post(
     '/admin/stake',
-    { schema: publicSchema.stakeSchema },
+    { schema: publicSchema.claimStakeSchema },
     async function (request, reply) {
       try {
         let role = request.user.role,
