@@ -36,14 +36,15 @@ app.listen(process.env.PORT || 3000, process.env.HOST || '0.0.0.0', err => {
     app.log.error(err)
     process.exit(1)
   }
+  handleCallback()
 })
 
-app.ready().then(() => {
-  app.io.on('connection', socket => {
-    console.log('user connected' + socket.id)
-    handleCallback(socket)
-  })
-})
+// app.ready().then(() => {
+//   app.io.on('connection', socket => {
+//     console.log('user connected' + socket.id)
+//     handleCallback(socket)
+//   })
+// })
 
 const client = new Twit({
   consumer_key: process.env.TW_CONSUMER_KEY,
@@ -99,6 +100,6 @@ const handleCallback = async () => {
       track: tags
     })
     stream.on('tweet', streamCallback)
-    setInterval(() => sendTweets(socket, initState), 10000)
+    setInterval(() => sendTweets(socket, initState), 20000)
   })
 }
