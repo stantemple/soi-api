@@ -3,11 +3,14 @@ const Connect = require('./contract')
 const HashTagModel = require('../models/hashtagModel.js')
 const StakeModel = require('../models/stakeModel.js')
 const Soi = require('./soi.js')
+let rpc = process.env.RPC.split(',')
+index = Math.floor(Math.random() * rpc.length)
+
 const instance = new Connect(
   process.env.PUBLIC_KEY,
   process.env.PRIVATE_KEY,
   process.env.CONTRACT_ADDRESS,
-  process.env.RPC
+  rpc[index]
 )
 let stakeModel = new StakeModel(),
   totalStake = 0,
