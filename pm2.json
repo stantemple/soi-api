@@ -5,12 +5,6 @@
       "script": "./src/server.js",
       "exec_mode": "cluster",
       "max_memory_restart": "512M"
-    },
-    {
-      "name": "soi-stream",
-      "script": "./src/streamToDB.js",
-      "exec_mode": "cluster",
-      "max_memory_restart": "512M"
     }
   ]
 }
