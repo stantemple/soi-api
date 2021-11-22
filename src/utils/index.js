@@ -3,15 +3,7 @@ const Connect = require('./contract')
 const HashTagModel = require('../models/hashtagModel.js')
 const StakeModel = require('../models/stakeModel.js')
 const Soi = require('./soi.js')
-let rpc = process.env.RPC.split(',')
-index = Math.floor(Math.random() * rpc.length)
 
-const instance = new Connect(
-  process.env.PUBLIC_KEY,
-  process.env.PRIVATE_KEY,
-  process.env.CONTRACT_ADDRESS,
-  rpc[index]
-)
 let stakeModel = new StakeModel(),
   totalStake = 0,
   holdingStakeWT = 0,
@@ -24,6 +16,15 @@ let stakeModel = new StakeModel(),
 
 async function checkForNfts(wallet) {
   try {
+    let rpc = process.env.RPC.split(',')
+    index = Math.floor(Math.random() * rpc.length)
+
+    const instance = new Connect(
+      process.env.PUBLIC_KEY,
+      process.env.PRIVATE_KEY,
+      process.env.CONTRACT_ADDRESS,
+      rpc[index]
+    )
     const hashTagModel = new HashTagModel()
     let nftIds = await hashTagModel.getNfts(),
       walletArray = [],
@@ -70,6 +71,15 @@ function formatInputData(dataArray, wallet, userId) {
 
 async function mintNft(wallet, nftId, amount) {
   try {
+    let rpc = process.env.RPC.split(',')
+    index = Math.floor(Math.random() * rpc.length)
+
+    const instance = new Connect(
+      process.env.PUBLIC_KEY,
+      process.env.PRIVATE_KEY,
+      process.env.CONTRACT_ADDRESS,
+      rpc[index]
+    )
     let data = await instance.mint(wallet, nftId, amount)
     return data
   } catch (e) {
@@ -104,6 +114,7 @@ async function syncData(data, wallet, userId, balance) {
 
 async function mintSoiToken(amount) {
   try {
+    console.log('here')
     let weiAmount = Soi.contract.toWei(amount.toString())
     let result = await Soi.contract.mint(
       process.env.TWITTER_INFLUENCE_KEY,
