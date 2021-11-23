@@ -121,7 +121,9 @@ HashtagSchema.methods = {
   getTwitterOccurance: async function () {
     const HashT = mongoose.model('Hashtag')
     let data = await HashT.aggregate([
-      { $match: { nftId: { $ne: null } } },
+      {
+        $match: { $and: [{ nftId: { $ne: null } }, { wallets: { $ne: [] } }] }
+      },
       { $sort: { twitter: -1 } },
 
       {

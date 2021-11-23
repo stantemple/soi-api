@@ -2,9 +2,10 @@ const Web3 = require('web3')
 require('dotenv').config()
 const SoiMaker = require('../../abi/SoiMaker.json')
 const TokenSoi = require('../../abi/TokenSoi.json')
-let rpc = process.env.RPC.split(','),
-  index = Math.floor(Math.random() * rpc.length)
+
 const getProvider = () => {
+  let rpc = process.env.RPC.split(','),
+    index = Math.floor(Math.random() * rpc.length)
   let web3 = new Web3(rpc[index])
   const account = web3.eth.accounts.privateKeyToAccount(
     '0x' + process.env.PRIVATE_KEY
